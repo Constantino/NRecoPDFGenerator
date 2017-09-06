@@ -27,20 +27,20 @@ namespace Controllers {
 		[ValidateInput(false)]
 		public ActionResult GeneratePdf(string htmlContent, string htmlUrl) {
 
-            string[] htmlFiles = htmlUrl.Split(';');
+			string[] htmlFiles = htmlUrl.Split(';');
 
 			var htmlToPdf = new HtmlToPdfConverter();
 
 			var pdfContentType = "application/pdf";
-            Stream output = new System.IO.MemoryStream();
-            
-            string pdfName = Path.GetTempPath()+"/firstPdf.pdf";
-            if (!String.IsNullOrEmpty(htmlUrl)) {
-                //return File( htmlToPdf.GeneratePdfFromFile(htmlUrl, null), pdfContentType);
-                htmlToPdf.GeneratePdfFromFiles(htmlFiles, null, pdfName);
-                return File(pdfName, pdfContentType);
-                
-            } else {
+			Stream output = new System.IO.MemoryStream();
+			
+			string pdfName = Path.GetTempPath()+"/firstPdf.pdf";
+			if (!String.IsNullOrEmpty(htmlUrl)) {
+				//return File( htmlToPdf.GeneratePdfFromFile(htmlUrl, null), pdfContentType);
+				htmlToPdf.GeneratePdfFromFiles(htmlFiles, null, pdfName);
+				return File(pdfName, pdfContentType);
+				
+			} else {
 				return File( htmlToPdf.GeneratePdf(htmlContent, null), pdfContentType);
 			}
 		}
