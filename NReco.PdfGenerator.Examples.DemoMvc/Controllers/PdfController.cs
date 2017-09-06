@@ -44,13 +44,20 @@ namespace Controllers {
         public ActionResult GeneratePdf(string htmlContent, string htmlUrl) {
 
             string[] htmlFiles = htmlUrl.Split(';');
+            
+            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            
+            doc.Load(htmlFiles[0]);
+            
+            doc.DocumentNode.SelectSingleNode("//div[@class='pageHeader']").Remove();
+            doc.DocumentNode.SelectSingleNode("//div[@class='leftNav']").Remove();
+            doc.DocumentNode.SelectSingleNode("//div[@class='topicContent']").SetAttributeValue("Style", "");
 
-            foreach (var e in htmlFiles) {
-                PreProcessFile(e);
-            }
+            var x = doc.DocumentNode.SelectSingleNode("//div[@class='topicContent']");
 
             var htmlToPdf = new HtmlToPdfConverter();
-
+            htmlToPdf.Orientation = PageOrientation.Landscape;
+            //htmlToPdf.Zoom = (float)0.8;
             var pdfContentType = "application/pdf";
             Stream output = new System.IO.MemoryStream();
             
