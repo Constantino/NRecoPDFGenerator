@@ -1,0 +1,32 @@
+﻿
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="pull-left">
+				<h1>
+					PDF Generator for .NET (C#)
+					<small>WkHtmlToPdf wrapper</small>
+				</h1>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<hr />
+
+
+	<div class="row">
+		<div class="col-md-12">
+			
+			<form action="@Url.Action("GeneratePdf", "Pdf")" target="_blank" method="post">
+				<div class="form-group">
+                    <textarea name="htmlUrl" class="form-control" width:100%;" placeholder='Specify URL(s) separated by ";"'></textarea>
+				</div>
+				<button type="submit" class="btn btn-large btn-info generatePdf">
+					Generate PDF Document
+				</button>
+			</form>
+		</div>
+	</div>
+
+
+</div>
