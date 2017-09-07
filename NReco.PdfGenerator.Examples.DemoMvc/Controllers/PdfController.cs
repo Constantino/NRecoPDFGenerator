@@ -22,48 +22,36 @@ namespace Controllers {
         public ActionResult DemoPage() {
             return View();
         }
-
-        public void PreProcessFile(string filePath){
-
-            const string style = "<style>body { height:203mm; width:267mm; margin-left:auto; margin-right:auto; }</style>";
-            string HTMLCode = System.IO.File.ReadAllText(filePath);
-            HTMLCode = HTMLCode.Replace("<head>", "<head>" + style);
-
-            // Open the file.
-            using (FileStream fs = System.IO.File.OpenWrite(filePath))
-            {
-                Byte[] info =
-                    new UTF8Encoding(true).GetBytes(HTMLCode);
-
-                // Add some information to the file.
-                fs.Write(info, 0, info.Length);
-            }
-        }
-
+        
         [ValidateInput(false)]
         public ActionResult GeneratePdf(string htmlContent, string htmlUrl) {
 
-            string[] htmlFiles = htmlUrl.Split(';');
+            string[] htmlFiles = Directory.GetFiles(htmlUrl);
             
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-            
-            doc.Load(htmlFiles[0]);
-            
-            doc.DocumentNode.SelectSingleNode("//div[@class='pageHeader']").Remove();
-            doc.DocumentNode.SelectSingleNode("//div[@class='leftNav']").Remove();
-            doc.DocumentNode.SelectSingleNode("//div[@class='topicContent']").SetAttributeValue("Style", "");
 
-            var x = doc.DocumentNode.SelectSingleNode("//div[@class='topicContent']");
+            foreach (var htmlDoc in htmlFiles)
+            {
+                
+                doc.Load(htmlDoc);
+
+                doc.DocumentNode.SelectSingleNode("//div[@class='pageHeader']").Remove();
+                doc.DocumentNode.SelectSingleNode("//div[@class='leftNav']").Remove();
+                doc.DocumentNode.SelectSingleNode("//div[@class='topicContent']").SetAttributeValue("Style", "margin-left: 0px");
+
+                MemoryStream output = new System.IO.MemoryStream();
+                doc.Save(output);
+
+                System.IO.File.WriteAllBytes(htmlDoc, output.ToArray());
+            }
 
             var htmlToPdf = new HtmlToPdfConverter();
             htmlToPdf.Orientation = PageOrientation.Landscape;
-            //htmlToPdf.Zoom = (float)0.8;
             var pdfContentType = "application/pdf";
-            Stream output = new System.IO.MemoryStream();
             
-            string pdfName = Path.GetTempPath()+"/firstPdf.pdf";
+            string pdfName = Path.GetTempPath()+"/Document.pdf";
+
             if (!String.IsNullOrEmpty(htmlUrl)) {
-                //return File( htmlToPdf.GeneratePdfFromFile(htmlUrl, null), pdfContentType);
                 htmlToPdf.GeneratePdfFromFiles(htmlFiles, null, pdfName);
                 return File(pdfName, pdfContentType);
                 
@@ -71,10 +59,6 @@ namespace Controllers {
                 return File( htmlToPdf.GeneratePdf(htmlContent, null), pdfContentType);
             }
         }
-
-
-
-
-
+        
     }
 }
